@@ -21,6 +21,10 @@
     margin-bottom: 1.5rem;
 }
 
+.modal-body .modal-checkbox {
+    margin-bottom: 10px;
+}
+
 .modal-body .cancel-btn.MuiButton-root {
     display: block;
     margin-left: auto;

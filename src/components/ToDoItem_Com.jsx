@@ -9,26 +9,22 @@ export default class ToDoItem_Com extends Component {
         return (
             <Grid container className='to-do-item-container'>
                 <Grid item xs={10}>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                name={this.props.data.id + ""}
-                                onChange={(e) => console.log(e.target.name)}
-                            />
-                        }
-                        label={this.props.data.title}
-                        className='checkbox-label'
-                    />
+                    <span>{this.props.data.title}</span>
                 </Grid>
                 <Grid item xs={2} className='icon-container'>
                     <Tooltip title='Lihat Detail'>
-                        <PageviewIcon />
+                        <button
+                            className='icon-btn'
+                            onClick={() => this.props.handleTaskAction(this.props.data.id, 'update')}
+                        >
+                            <PageviewIcon />
+                        </button>
                     </Tooltip>
                     { this.props.type === 'to-do-list' ?
                         <Tooltip title='Hapus Task'>
                             <button
                                 className='icon-btn'
-                                onClick={() => this.props.deleteTask(this.props.data.id, 'delete')}
+                                onClick={() => this.props.handleTaskAction(this.props.data.id, 'delete')}
                             >
                                 <DeleteIcon />
                             </button>

@@ -11,3 +11,18 @@
     margin-top: 1rem;
     margin-bottom: 2rem;
 }
+
+.box-container .create-form .text-required {
+    margin-top: -15px !important;
+    margin-bottom: 20px !important;
+}
+.box-container .create-btn {
+    display: block;
+    margin-top: 2rem;
+    margin-left: auto;
+}
+
+.add-to-do-column .box-container {
+    width: 87.5%;
+    height: auto;
+}

@@ -36,3 +36,6 @@
 .white-text {
     color: white;
 }
+.text-required {
+    color: red;
+}
