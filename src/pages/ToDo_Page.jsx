@@ -38,6 +38,7 @@ export default class ToDo_Page extends Component {
         this.initializeToDoListData = this.initializeToDoListData.bind(this);
         this.handleTaskAction = this.handleTaskAction.bind(this);
         this.handleModalSubmit = this.handleModalSubmit.bind(this);
+        this.handleCreateTask = this.handleCreateTask.bind(this);
     }
 
     /**
@@ -193,6 +194,22 @@ export default class ToDo_Page extends Component {
         }
     }
 
+    /**
+     * Add new task to To Do Lists section
+     * @param data new task / to do list data 
+     */
+    handleCreateTask(data) {
+        data['id'] = this.state.lastId + 1;
+        data['createdAt'] = moment().format('YYYY-MM-DD HH:mm');
+        data['status'] = 0;
+        let newToDoLists = this.state.toDoLists;
+        newToDoLists.push(data);
+        this.setState({
+            toDoLists: newToDoLists,
+            lastId: this.state.lastId + 1,
+        });
+    }
+
     componentDidMount() {
         this.initializeToDoListData();
     }
@@ -223,6 +240,13 @@ export default class ToDo_Page extends Component {
                         <h1 id='to-do-title' className='white-text'>
                             TO DO LISTS
                         </h1>
+                    </Grid>
+                    <Grid item xs={12} className='add-to-do-column'>
+                        <BoxContainerCom
+                            type='create-task'
+                            title='Create New Task'
+                            handleSubmit={this.handleCreateTask}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={6} className='to-do-column'>
                         <BoxContainerCom
