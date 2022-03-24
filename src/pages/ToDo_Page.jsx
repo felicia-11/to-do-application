@@ -194,6 +194,10 @@ export default class ToDo_Page extends Component {
         }
     }
 
+    /**
+     * Add new task to To Do Lists section
+     * @param data new task / to do list data 
+     */
     handleCreateTask(data) {
         data['id'] = this.state.lastId + 1;
         data['createdAt'] = moment().format('YYYY-MM-DD HH:mm');
