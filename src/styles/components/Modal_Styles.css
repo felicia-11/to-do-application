@@ -1,0 +1,43 @@
+.modal-body {
+    top: 50%;
+    left: 50%;
+    width: 30vw;
+    position: absolute;
+    background-color: white;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 3px rgba(0,0,0,0.5);
+    padding: 20px;
+    border-radius: 10px;
+    transform: translate(-50%, -50%);
+    scrollbar-width: thin;
+}
+
+.modal-body .modal-title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+.modal-body p {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.modal-body .modal-checkbox {
+    margin-bottom: 10px;
+}
+
+.modal-body .cancel-btn.MuiButton-root {
+    display: block;
+    margin-left: auto;
+}
+
+@media (max-width: 599px) {
+    .modal-body {
+        width: 60vw;
+    }
+}
+
+@media (min-width: 599px) and (max-width: 899px) {
+    .modal-body {
+        width: 50vw;
+    }
+}

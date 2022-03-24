@@ -1,0 +1,41 @@
+/* Page Background */
+#to-do-bg {
+    background: linear-gradient(
+        to bottom right,
+        rgba(64, 102, 179, 1),
+        rgba(64, 102, 179, 0.75),
+        rgba(64, 102, 179, 0.5)
+    );
+}
+
+/* Loading Spinner */
+#bg-loading {
+    background: rgba(0, 0, 0, 0.3);
+}
+#load-spinner svg {
+    color: white;
+}
+
+/* Box Container */
+.box-container {
+    background-color: white;
+}
+
+/* Button */
+.to-do-item-container .icon-container .icon-btn {
+    background-color: transparent;
+}
+.cancel-btn.MuiButton-root {
+    background-color: gray;
+}
+.cancel-btn.MuiButton-root:hover {
+    background-color: darkgray;
+}
+
+/* Text Colour */
+.white-text {
+    color: white;
+}
+.text-required {
+    color: red;
+}
