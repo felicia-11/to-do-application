@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import { Grid } from '@mui/material';
 import { getToDoLists } from '../logic/APIHandler';
 import LoadingCom from '../components/Loading_Com';
 import SnackbarCom from '../components/Snackbar_Com';
+import ToDoModalCom from '../components/ToDoModal_Com';
 import BoxContainerCom from '../components/BoxContainer_Com';
 import '../styles/pages/ToDo_Styles.css';
-import ToDoModalCom from '../components/ToDoModal_Com';
 
 export default class ToDo_Page extends Component {
 
@@ -15,7 +16,8 @@ export default class ToDo_Page extends Component {
 
             // Page State
             isLoading: false,
-            isModalDeleteShow: false,
+            isModalShow: false,
+            modalKey: '0',
 
             // Snackbar State
             isSnackbarOpen: false,
@@ -27,16 +29,20 @@ export default class ToDo_Page extends Component {
             modalTitle: '',
 
             // Data State
+            lastId: 0,
             toDoLists: null,
             finishedTasks: null,
             selectedTask: { id: "0" },
 
         };
         this.initializeToDoListData = this.initializeToDoListData.bind(this);
-        this.handleDeleteTask = this.handleDeleteTask.bind(this);
+        this.handleTaskAction = this.handleTaskAction.bind(this);
         this.handleModalSubmit = this.handleModalSubmit.bind(this);
     }
 
+    /**
+     * Get initial data from API
+     */
     async initializeToDoListData() {
         this.setState({ isLoading: true });
         const resp = await getToDoLists();
@@ -50,6 +56,7 @@ export default class ToDo_Page extends Component {
             this.setState({
                 toDoLists: toDoData,
                 finishedTasks: finishedData,
+                lastId: resp[0][resp[0].length - 1].id,
                 isLoading: false,
             });
         }
@@ -66,43 +73,124 @@ export default class ToDo_Page extends Component {
     /**
      * Open modal
      * @param id task's ID
-     * @param type action type
+     * @param action task action
+     * @param status task status
      */
-    handleDeleteTask(id, type) {
-        const selectedItem = this.state.toDoLists.filter(res => res.id === id);
-        if ( type === 'delete' ) {
-            if ( !this.state.isModalDeleteShow ) {
+    handleTaskAction(id, action, status) {
+        if ( !this.state.isModalShow ) {
+            if ( action === 'delete' ) {
+                const selectedItem = this.state.toDoLists.filter(res => res.id === id);
                 this.setState({
                     modalTitle: 'Hapus data?',
                     modalType: 'delete-task',
                     selectedTask: selectedItem[0],
-                    isModalDeleteShow: true,
+                    isModalShow: true,
                 });
             }
-            else {
+            else if ( action === 'update' ) {
+                let selectedItem = null;
+                if ( status === 'to-do' ) {
+                    selectedItem = this.state.toDoLists.filter(res => res.id === id);
+                }
+                else if ( status === 'done' ) {
+                    selectedItem = this.state.finishedTasks.filter(res => res.id === id);
+                }
                 this.setState({
-                    isModalDeleteShow: false,
+                    modalTitle: 'Update task?',
+                    modalType: 'update-task',
+                    selectedTask: selectedItem[0],
+                    isModalShow: true,
                 });
             }
         }
         else {
             this.setState({
-                isModalDeleteShow: false,
+                isModalShow: false,
             });
         }
+        this.setState({
+            modalKey: parseInt(this.state.modalKey) + 1 + "",
+        });
     }
 
     /**
      * Handle submit button for To Do Modal
+     * @param data new task data
      * @param type action type
      */
-    handleModalSubmit(type) {
-        let result = this.state.toDoLists;
-        result = result.filter(res => res.id !== this.state.selectedTask.id);
-        this.setState({
-            toDoLists: result,
-            isModalDeleteShow: false,
-        });
+    handleModalSubmit(data, type, prevData) {
+        if ( type === 'delete' ) {
+            let result = this.state.toDoLists;
+            result = result.filter(res => res.id !== this.state.selectedTask.id);
+            this.setState({
+                toDoLists: result,
+                isModalShow: false,
+            });
+        }
+        else if ( type === 'update' ) {
+            if ( prevData.status === 0 && !data.status ) {
+                let result = this.state.toDoLists;
+                result.forEach(res => {
+                    if ( res.id === prevData.id ) {
+                        res.title = data.title;
+                        res.description = data.description;
+                        res.status = data.status;
+                    }
+                });
+                this.setState({
+                    toDoLists: result,
+                    isModalShow: false,
+                });
+            }
+            else if ( prevData.status === 0 && data.status ) {
+                // Update finished tasks
+                let updatedTask = this.state.toDoLists.filter(res => res.id === prevData.id)[0];
+                updatedTask.title = data.title;
+                updatedTask.description = data.description;
+                updatedTask.status = data.status;
+                let newFinishedTasks = this.state.finishedTasks;
+                newFinishedTasks.push(updatedTask);
+                // Update to do lists
+                let newToDoLists = this.state.toDoLists;
+                newToDoLists = newToDoLists.filter(res => res.id !== prevData.id);
+                this.setState({
+                    toDoLists: newToDoLists,
+                    finishedTasks: newFinishedTasks,
+                    isModalShow: false,
+                });
+            }
+            else if ( prevData.status === 1 && data.status ) {
+                let result = this.state.finishedTasks;
+                result.forEach(res => {
+                    if ( res.id === prevData.id ) {
+                        res.title = data.title;
+                        res.description = data.description;
+                        res.status = data.status;
+                    }
+                });
+                this.setState({
+                    finishedTasks: result,
+                    isModalShow: false,
+                });
+            }
+            else if ( prevData.status === 1 && !data.status ) {
+                // Update to do lists
+                let updatedTask = this.state.finishedTasks.filter(res => res.id === prevData.id)[0];
+                updatedTask.title = data.title;
+                updatedTask.description = data.description;
+                updatedTask.status = data.status;
+                let newToDoLists = this.state.toDoLists;
+                newToDoLists.push(updatedTask);
+                // Update finished tasks
+                let newFinishedTasks = this.state.finishedTasks;
+                newFinishedTasks = newFinishedTasks.filter(res => res.id !== prevData.id);
+                this.setState({
+                    toDoLists: newToDoLists,
+                    finishedTasks: newFinishedTasks,
+                    isModalShow: false,
+                });
+            }
+        }
     }
 
     componentDidMount() {
@@ -123,13 +211,13 @@ export default class ToDo_Page extends Component {
                         handleClose={() => this.setState({ isSnackbarOpen: false })}
                     />
                     <ToDoModalCom
-                        key={this.state.selectedTask.id}
+                        key={this.state.modalKey}
                         type={this.state.modalType}
                         title={this.state.modalTitle}
-                        open={this.state.isModalDeleteShow}
+                        open={this.state.isModalShow}
                         data={this.state.selectedTask}
                         handleSubmit={this.handleModalSubmit}
-                        onClose={this.handleDeleteTask}
+                        onClose={this.handleTaskAction}
                     />
                     <Grid item xs={12}>
                         <h1 id='to-do-title' className='white-text'>
@@ -141,7 +229,7 @@ export default class ToDo_Page extends Component {
                             type='to-do-list'
                             title='To Do Lists'
                             data={this.state.toDoLists}
-                            deleteTask={this.handleDeleteTask}
+                            handleTaskAction={(id, act) => this.handleTaskAction(id, act, 'to-do')}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} className='to-do-column'>
@@ -149,6 +237,7 @@ export default class ToDo_Page extends Component {
                             type='to-do-list-finished'
                             title='Finished Tasks'
                             data={this.state.finishedTasks}
+                            handleTaskAction={(id, act) => this.handleTaskAction(id, act, 'done')}
                         />
                     </Grid>
                 </Grid>
