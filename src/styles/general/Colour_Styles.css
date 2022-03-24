@@ -21,6 +21,17 @@
     background-color: white;
 }
 
+/* Button */
+.to-do-item-container .icon-container .icon-btn {
+    background-color: transparent;
+}
+.cancel-btn.MuiButton-root {
+    background-color: gray;
+}
+.cancel-btn.MuiButton-root:hover {
+    background-color: darkgray;
+}
+
 /* Text Colour */
 .white-text {
     color: white;

@@ -5,6 +5,7 @@ import LoadingCom from '../components/Loading_Com';
 import SnackbarCom from '../components/Snackbar_Com';
 import BoxContainerCom from '../components/BoxContainer_Com';
 import '../styles/pages/ToDo_Styles.css';
+import ToDoModalCom from '../components/ToDoModal_Com';
 
 export default class ToDo_Page extends Component {
 
@@ -14,18 +15,26 @@ export default class ToDo_Page extends Component {
 
             // Page State
             isLoading: false,
+            isModalDeleteShow: false,
 
             // Snackbar State
             isSnackbarOpen: false,
             snackbarType: '',
             snackbarMessage: '',
 
+            // Modal State
+            modalType: '',
+            modalTitle: '',
+
             // Data State
             toDoLists: null,
             finishedTasks: null,
+            selectedTask: { id: "0" },
 
         };
         this.initializeToDoListData = this.initializeToDoListData.bind(this);
+        this.handleDeleteTask = this.handleDeleteTask.bind(this);
+        this.handleModalSubmit = this.handleModalSubmit.bind(this);
     }
 
     async initializeToDoListData() {
@@ -52,7 +61,48 @@ export default class ToDo_Page extends Component {
                 isLoading: false,
             });
         }
+    }
 
+    /**
+     * Open modal
+     * @param id task's ID
+     * @param type action type
+     */
+    handleDeleteTask(id, type) {
+        const selectedItem = this.state.toDoLists.filter(res => res.id === id);
+        if ( type === 'delete' ) {
+            if ( !this.state.isModalDeleteShow ) {
+                this.setState({
+                    modalTitle: 'Hapus data?',
+                    modalType: 'delete-task',
+                    selectedTask: selectedItem[0],
+                    isModalDeleteShow: true,
+                });
+            }
+            else {
+                this.setState({
+                    isModalDeleteShow: false,
+                });
+            }
+        }
+        else {
+            this.setState({
+                isModalDeleteShow: false,
+            });
+        }
+    }
+
+    /**
+     * Handle submit button for To Do Modal
+     * @param type action type
+     */
+    handleModalSubmit(type) {
+        let result = this.state.toDoLists;
+        result = result.filter(res => res.id !== this.state.selectedTask.id);
+        this.setState({
+            toDoLists: result,
+            isModalDeleteShow: false,
+        });
     }
 
     componentDidMount() {
@@ -72,6 +122,15 @@ export default class ToDo_Page extends Component {
                         message={this.state.snackbarMessage}
                         handleClose={() => this.setState({ isSnackbarOpen: false })}
                     />
+                    <ToDoModalCom
+                        key={this.state.selectedTask.id}
+                        type={this.state.modalType}
+                        title={this.state.modalTitle}
+                        open={this.state.isModalDeleteShow}
+                        data={this.state.selectedTask}
+                        handleSubmit={this.handleModalSubmit}
+                        onClose={this.handleDeleteTask}
+                    />
                     <Grid item xs={12}>
                         <h1 id='to-do-title' className='white-text'>
                             TO DO LISTS
@@ -82,7 +141,8 @@ export default class ToDo_Page extends Component {
                             type='to-do-list'
                             title='To Do Lists'
                             data={this.state.toDoLists}
-                            />
+                            deleteTask={this.handleDeleteTask}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={6} className='to-do-column'>
                         <BoxContainerCom

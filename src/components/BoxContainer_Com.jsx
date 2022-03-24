@@ -14,6 +14,7 @@ export default class BoxContainer_Com extends Component {
                                 key={`item_${idx}`}
                                 type={this.props.type}
                                 data={res}
+                                deleteTask={this.props.deleteTask}
                             />
                         :
                             <></>

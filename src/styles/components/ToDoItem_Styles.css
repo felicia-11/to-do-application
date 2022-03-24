@@ -7,6 +7,9 @@
     align-items: center;
     justify-content: end;
 }
+.to-do-item-container .icon-container .icon-btn {
+    border: none;
+}
 .to-do-item-container .icon-container svg {
     margin-left: 5px;
 }
