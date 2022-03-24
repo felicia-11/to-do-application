@@ -1,0 +1,24 @@
+.to-do-item-container {
+    margin-bottom: 20px;
+}
+
+.to-do-item-container .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+.to-do-item-container .icon-container svg {
+    margin-left: 5px;
+}
+.to-do-item-container .icon-container svg:hover {
+    cursor: pointer;
+}
+
+.to-do-item-container .checkbox-label {
+    width: 100%;
+}
+.to-do-item-container .checkbox-label span.MuiTypography-root {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
